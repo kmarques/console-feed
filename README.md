@@ -1,4 +1,6 @@
-# console-feed
+# console-feed [![Sponsors](https://img.shields.io/github/sponsors/samdenty?label=Sponsors)](https://github.com/sponsors/samdenty)
+
+[Sponsor this project](https://github.com/sponsors/samdenty)
 
 [![npm version](https://img.shields.io/npm/v/console-feed.svg?style=flat-square)](https://www.npmjs.com/package/console-feed)
 [![CircleCI](https://img.shields.io/circleci/project/github/samdenty99/console-feed.svg?style=flat-square)](https://circleci.com/gh/samdenty99/console-feed)
@@ -8,6 +10,10 @@
 A React component that displays console logs from the current page, an iframe or transported across a server.
 
 ![Demo](https://user-images.githubusercontent.com/13242392/38513414-1bc32870-3c26-11e8-9a8f-0989d2142b1c.png)
+
+## Alternative to `console-feed`
+
+https://github.com/liriliri/chii supports the embedding the entire Chrome devtools.
 
 ## Who's using it
 
@@ -168,6 +174,21 @@ Hook(
     this.setState(({ logs }) => ({ logs: [...logs, log] }))
   },
   { encode: false }
+)
+```
+
+### Limiting serialization
+
+You can limit the number of keys/elements included when serializing objects/arrays.
+
+```js
+Hook(
+  window.console,
+  (log) => {
+    this.setState(({ logs }) => ({ logs: [...logs, log] }))
+  },
+  true,
+  100 // limit to 100 keys/elements
 )
 ```
 

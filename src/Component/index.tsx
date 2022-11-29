@@ -1,6 +1,7 @@
 import * as React from 'react'
-import { ThemeProvider } from 'emotion-theming'
+import { ThemeProvider } from '@emotion/react'
 import { Props } from '../definitions/Component'
+import Methods from '../definitions/Methods'
 import Styles from './theme/default'
 
 import { Root } from './elements'
@@ -22,14 +23,35 @@ const customStringify = function (v) {
   })
 }
 
+const getTheme = (props: Props) => ({
+  variant: props.variant || 'light',
+  styles: {
+    ...Styles(props),
+    ...props.styles,
+  },
+  method: null,
+})
+
 class Console extends React.PureComponent<Props, any> {
-  theme = () => ({
-    variant: this.props.variant || 'light',
-    styles: {
-      ...Styles(this.props),
-      ...this.props.styles,
-    },
-  })
+  state = {
+    theme: getTheme(this.props),
+    prevStyles: this.props.styles,
+    prevVariant: this.props.variant,
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    if (
+      props.variant !== state.prevVariant ||
+      JSON.stringify(props.styles) !== JSON.stringify(props.prevStyles)
+    ) {
+      return {
+        theme: getTheme(props),
+        prevStyles: props.styles,
+        prevVariant: props.variant,
+      }
+    }
+    return null
+  }
 
   render() {
     let {
@@ -81,7 +103,7 @@ class Console extends React.PureComponent<Props, any> {
     }
 
     return (
-      <ThemeProvider theme={this.theme}>
+      <ThemeProvider theme={this.state.theme}>
         <Root>
           {logs.map((log, i) => {
             // If the filter is defined and doesn't include the method

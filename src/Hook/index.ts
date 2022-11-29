@@ -15,6 +15,7 @@ import { Encode } from '../Transform'
 export interface HookOptions {
   encode?: boolean
   async?: boolean
+  limit?: number
 }
 
 const optionsDefault: HookOptions = { encode: true, async: true }
@@ -31,12 +32,16 @@ function runImmediately(f: () => void): void {
 export default function Hook(
   console: Console,
   callback: Callback,
-  optionsIn: boolean | HookOptions = true
+  optionsIn: boolean | HookOptions = true,
+  limit?: number
 ) {
   const options: HookOptions = (() => {
     // Support old call style, where third argument is just `encode`
     if (typeof optionsIn === 'boolean') {
       optionsIn = { encode: optionsIn }
+    }
+    if (limit) {
+      optionsIn.limit = limit
     }
     // Set defaults
     optionsIn = Object.assign({}, optionsDefault, optionsIn)
@@ -71,7 +76,7 @@ export default function Hook(
         if (parsed) {
           let encoded: Message = parsed as Message
           if (options.encode) {
-            encoded = Encode(parsed) as Message
+            encoded = Encode(parsed, options.limit) as Message
           }
           callback(encoded, parsed)
         }

@@ -118,3 +118,31 @@ it('disables async with a flag', async () => {
   expect(decoded2.method).toEqual('log')
   expect(decoded2.data).toEqual([[100]])
 })
+
+it('correctly limits a long array', async () => {
+  Hook(
+    console,
+    (log) => {
+      console.logs.push(log)
+    },
+    true,
+    100
+  )
+  const result = await Log('log', Array.from(Array(99999).keys()))
+  expect(result[0].data[0].length).toEqual(101)
+  expect(result[0].data[0].pop()).toEqual('__console_feed_remaining__99899')
+})
+
+it('correctly limits a long object', async () => {
+  Hook(
+    console,
+    (log) => {
+      console.logs.push(log)
+    },
+    true,
+    100
+  )
+  const result = await Log('log', { ...Array.from(Array(99999).keys()) })
+  expect(Object.keys(result[0].data[0]).length).toEqual(101)
+  expect(result[0].data[0]['__console_feed_remaining__']).toEqual(99899)
+})
